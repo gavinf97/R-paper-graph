@@ -1,0 +1,85 @@
+---
+title: "R_graphing_DOME_20250116"
+output: html_document
+date: "2025-01-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r plot}
+# Load the required libraries
+library(RColorBrewer)
+
+# Read the data from the CSV file
+data <- read.csv("query_results.csv")  # Replace 'query_results.csv' with the actual file name
+
+# Assuming the CSV has columns named 'Year' and 'Hits'
+year <- data$Year[1:25]  # Select the first 26 rows of the 'Year' column
+counts <- data$Hits[1:25]  # Select the first 26 rows of the 'Hits' column
+
+par(las = 1,  mgp = c(4, 1, 0), mar = c(5, 6, 4, 2))
+# Create the bar plot
+barplot(counts,
+        names.arg = year,  # Use 'year' for the x-axis labels
+        xlab = "Year",    # Label for the x-axis
+        ylab = "New publications",      # Label for the y-axis
+        main = "New papers mentioning 'machine learning' in EPMC",  # Title of the plot
+        col = "#005472",  # Change the color of the bars 
+        ylim = c(0, 90000),
+        yaxt = "n"
+        #xaxt = "n"
+)
+
+# Add custom y-axis with steps of 20
+axis(2, at = seq(0, 90000, by = 10000), labels = seq(0, 90000, by = 10000))
+
+# Add custom x-axis with 45-degree rotated labels, larger size, and aligned properly
+#axis(1, at = seq(1, length(year[1:25]), by = 1), labels = year[1:25]) 
+     #srt = 45,       # Rotate labels by 45 degrees
+     #las = 1,        # Horizontal alignment of labels
+     #cex.axis = 1,   # Increase the size of the labels
+     #tick = FALSE)   # Suppress ticks, since we're using custom labels
+```
+```{r}
+# Load ggplot2 package
+#install.packages('ggplot2')
+library(ggplot2)
+
+# Read the data from the CSV file
+data <- read.csv("query_results.csv")  # Replace 'query_results.csv' with the actual file name
+
+# Create the ggplot with consistent font for axis and labels
+ggplot(data_subset, aes(x = factor(Year), y = Hits)) +
+  geom_col(fill = "#005472") +  # Use geom_col instead of geom_bar for direct control of heights
+  labs(
+    x = "Year",  # Label for the x-axis
+    y = "New publications",  # Label for the y-axis
+    title = "New publications each year mentioning 'machine learning' in EPMC"  # Title of the plot
+  ) +
+  scale_y_continuous(
+    limits = c(0, 90000), 
+    breaks = seq(0, 90000, by = 10000),
+    expand = c(0, 0)  # Remove space between the bars and the y-axis
+  ) +
+  scale_x_discrete(expand = c(0, 0)) +  # Remove space between the bars and the x-axis
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, family = "Corbel", face = "plain", margin = margin(t = 5)),  # Rotate x-axis labels and bring them closer to the axis
+    axis.title.x = element_text(margin = margin(t = 20), family = "Corbel", face = "plain"),  # Set x-axis title font to Corbel and make font weight consistent
+    axis.title.y = element_text(margin = margin(r = 20), family = "Corbel", face = "plain"),  # Set y-axis title font to Corbel and make font weight consistent
+    axis.line = element_line(color = "black"),  # Set axis lines to black
+    plot.title = element_text(hjust = 0.5, family = "Corbel", face = "plain"),  # Center the plot title and set font to Corbel
+    panel.background = element_rect(fill = "white"),  # Set background color to white
+    plot.background = element_rect(fill = "white"),  # Set plot background color to white
+    text = element_text(family = "Corbel", face = "plain")  # Set all text elements to use Corbel font with consistent thickness
+  ) +
+  coord_cartesian(clip = "off")  # Ensure no clipping of the bars at the edges
+
+
+# Save the plot to your working directory as a PNG file
+ggsave("New_publications.png", width = 10, height = 7)  # You can adjust the width and height as needed
+
+```
+
+
